@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git branch: 'develop', url: 'https://github.com/khaitk/config-jenkins-docker.git'
+                git branch: 'develop', credentialsId: 'github', url: 'https://github.com/khaitk/config-jenkins-docker.git'
             }
         }
 

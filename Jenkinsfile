@@ -13,25 +13,14 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'docker build -t khraiteka/jenkins-docker .'
-            }
+        stage('Build image') {
+            dockerImage = docker.build("khraiteka/jenkins-docker:latest")
         }
-        stage('Login') {
-            steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+    
+        stage('Push image') {
+            withDockerRegistry([ credentialsId: "dockerhubaccount", url: "" ]) {
+                dockerImage.push()
             }
-        }
-        stage('Push') {
-            steps {
-                sh 'docker push khraiteka/jenkins-docker'
-            }
-        }
-    }
-    post {
-        always {
-            sh 'docker logout'
         }
     }
 }

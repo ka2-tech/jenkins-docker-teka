@@ -9,8 +9,11 @@ pipeline {
 
         stage('Build Docker Image') {         
             steps{                
-	            sh 'sudo docker build -t khraiteka/jenkins-docker:$BUILD_NUMBER .'           
-                echo 'Build Image Completed'                
+                script {
+                    def customImage = docker.build("khraiteka/jenkins-docker:$BUILD_NUMBER")
+                    customImage.push()
+                }  
+                echo 'Build Image Completed'             
             }           
         }
     }

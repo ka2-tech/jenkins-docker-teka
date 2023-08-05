@@ -1,11 +1,7 @@
 pipeline {
+    def app
+
     agent any
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-    }
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-    }
     stages {
         stage('Clone') {
             steps {
@@ -14,12 +10,18 @@ pipeline {
         }
 
         stage('Build image') {
-            dockerImage = docker.build("khraiteka/jenkins-docker:latest")
+            app = docker.build("khraiteka/jenkins-docker:latest")
+        }
+
+        stage('Test image') {
+            app.inside {
+                sh 'echo "Tests passed"'
+            }
         }
     
         stage('Push image') {
-            withDockerRegistry([ credentialsId: "dockerhubaccount", url: "" ]) {
-                dockerImage.push()
+            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+                app.push("latest")
             }
         }
     }

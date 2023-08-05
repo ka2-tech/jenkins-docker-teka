@@ -1,6 +1,4 @@
 pipeline {
-    def app
-
     agent any
     stages {
         stage('Clone') {
@@ -9,20 +7,11 @@ pipeline {
             }
         }
 
-        stage('Build image') {
-            app = docker.build("khraiteka/jenkins-docker:latest")
-        }
-
-        stage('Test image') {
-            app.inside {
-                sh 'echo "Tests passed"'
-            }
-        }
-    
-        stage('Push image') {
-            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-                app.push("latest")
-            }
+        stage('Build Docker Image') {         
+            steps{                
+	            sh 'sudo docker build -t khraiteka/jenkins-docker:$BUILD_NUMBER .'           
+                echo 'Build Image Completed'                
+            }           
         }
     }
 }
